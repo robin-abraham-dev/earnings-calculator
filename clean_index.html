@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Partner Earnings Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.02) 40px, rgba(255,255,255,0.02) 42px),
+                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.02) 40px, rgba(255,255,255,0.02) 42px);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .calculators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .calculator-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calculator-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #fff;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-group input[type="number"] {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input[type="number"]:focus {
+            outline: none;
+            border-color: #fff;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+        }
+
+        .currency-symbol {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #fff;
+            font-weight: 600;
+            pointer-events: none;
+        }
+
+        .currency-input {
+            padding-left: 35px !important;
+        }
+
+        .inline-slider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .num-box {
+            width: 80px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            padding: 8px 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        input[type="range"].thin-range {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            flex: 1;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.2);
+            outline: none;
+        }
+
+        input[type="range"].thin-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+
+        input[type="range"].thin-range::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            cursor: pointer;
+            border: none;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .calculate-btn:hover {
+            background: #444;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-item {
+            margin-bottom: 15px;
+        }
+
+        .result-label {
+            color: #a0a8c0;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-value {
+            color: #fff;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .result-value.earnings {
+            color: #fff;
+            font-size: 2.2rem;
+        }
+
+        .result-subtitle {
+            color: #a0a8c0;
+            font-size: 0.75rem;
+            margin-top: 5px;
+        }
+
+        .current-earnings-wrap {
+            background: rgba(57, 60, 80, 0.6);
+            border: 1px solid rgba(120, 122, 160, 0.35);
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 8px;
+        }
+
+        .current-earnings-title {
+            color: #c9cde4;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+        }
+
+        .current-earnings-input {
+            width: 100%;
+            background: #212229;
+            border: 1px solid rgba(120, 122, 160, 0.35);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: #d9dbe6;
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .current-earnings-input:focus {
+            outline: none;
+            border-color: #6b6f8e;
+            box-shadow: 0 0 0 2px rgba(107, 111, 142, 0.2);
+        }
+
+        .additional-notes {
+            color: #666;
+            font-size: 0.7rem;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            margin-top: 40px;
+            padding: 20px;
+        }
+
+        .dots {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .dots span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: bounce 1s infinite ease-in-out;
+        }
+
+        .dots span:nth-child(2) { animation-delay: 0.15s; }
+        .dots span:nth-child(3) { animation-delay: 0.30s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+            40% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .calculators-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .calculator-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="calculators-grid">
+            <!-- Calculator 1 -->
+            <div class="calculator-card">
+                <div class="input-group">
+                    <label for="clients1">Number of Trading Clients</label>
+                    <input type="number" id="clients1" min="1" value="50" placeholder="Enter number of clients">
+                </div>
+
+                <div class="input-group">
+                    <label for="capital1">Average Capital per Client</label>
+                    <div class="input-wrapper">
+                        <span class="currency-symbol">₹</span>
+                        <input type="number" id="capital1" class="currency-input" min="1" value="100000" placeholder="Enter average capital">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="leverage1">Average Leverage Used</label>
+                    <div class="inline-slider">
+                        <input type="range" id="leverageRange1" class="thin-range" min="0" max="100" value="20">
+                        <input type="number" id="leverage1" class="num-box" min="0" max="100" value="20">
+                        <span style="color:#fff">x</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="trades1">Trades per Client per Month</label>
+                    <div class="inline-slider">
+                        <input type="range" id="tradesRange1" class="thin-range" min="1" max="100" value="30">
+                        <input type="number" id="trades1" class="num-box" min="1" max="100" value="30">
+                    </div>
+                </div>
+
+                <button class="calculate-btn" onclick="calculateEarnings(1)">
+                    Calculate Earnings
+                </button>
+
+                <div class="results" id="results1">
+                    <div class="result-item">
+                        <div class="result-label">Monthly Earnings (Partner Revenue Share)</div>
+                        <div class="result-value earnings" id="earnings1"></div>
+                        <div class="result-subtitle">Trading fee 0.05% - Partner Share 20%</div>
+                    </div>
+                    <div class="additional-notes">Additional notes</div>
+                </div>
+                <div class="current-earnings-wrap">
+                    <div class="current-earnings-title">Current Earnings</div>
+                    <input type="text" class="current-earnings-input" id="currentEarnings1" placeholder="₹0">
+                </div>
+            </div>
+
+            <!-- Calculator 2 -->
+            <div class="calculator-card">
+                <div class="input-group">
+                    <label for="clients2">Number of Trading Clients</label>
+                    <input type="number" id="clients2" min="1" value="100" placeholder="Enter number of clients">
+                </div>
+
+                <div class="input-group">
+                    <label for="capital2">Average Capital per Client</label>
+                    <div class="input-wrapper">
+                        <span class="currency-symbol">₹</span>
+                        <input type="number" id="capital2" class="currency-input" min="1" value="5000" placeholder="Enter average capital">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="leverage2">Average Leverage Used</label>
+                    <div class="inline-slider">
+                        <input type="range" id="leverageRange2" class="thin-range" min="0" max="100" value="27">
+                        <input type="number" id="leverage2" class="num-box" min="0" max="100" value="27">
+                        <span style="color:#fff">x</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="trades2">Trades per Client per Month</label>
+                    <div class="inline-slider">
+                        <input type="range" id="tradesRange2" class="thin-range" min="1" max="100" value="25">
+                        <input type="number" id="trades2" class="num-box" min="1" max="100" value="25">
+                    </div>
+                </div>
+
+                <button class="calculate-btn" onclick="calculateEarnings(2)">
+                    Calculate Earnings
+                </button>
+
+                <div class="results" id="results2">
+                    <div class="result-item">
+                        <div class="result-label">Monthly Earnings (Partner Revenue Share)</div>
+                        <div class="result-value earnings" id="earnings2"></div>
+                        <div class="result-subtitle">Trading fee 0.05% - Partner Share 20%</div>
+                    </div>
+                    <div class="additional-notes">Additional notes</div>
+                </div>
+                <div class="current-earnings-wrap">
+                    <div class="current-earnings-title">Current Earnings</div>
+                    <input type="text" class="current-earnings-input" id="currentEarnings2" placeholder="₹0">
+                </div>
+            </div>
+
+            <!-- Calculator 3 -->
+            <div class="calculator-card">
+                <div class="input-group">
+                    <label for="clients3">Number of Trading Clients</label>
+                    <input type="number" id="clients3" min="1" value="1000" placeholder="Enter number of clients">
+                </div>
+
+                <div class="input-group">
+                    <label for="capital3">Average Capital per Client</label>
+                    <div class="input-wrapper">
+                        <span class="currency-symbol">₹</span>
+                        <input type="number" id="capital3" class="currency-input" min="1" value="50000" placeholder="Enter average capital">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="leverage3">Average Leverage Used</label>
+                    <div class="inline-slider">
+                        <input type="range" id="leverageRange3" class="thin-range" min="0" max="100" value="27">
+                        <input type="number" id="leverage3" class="num-box" min="0" max="100" value="27">
+                        <span style="color:#fff">x</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="trades3">Trades per Client per Month</label>
+                    <div class="inline-slider">
+                        <input type="range" id="tradesRange3" class="thin-range" min="1" max="100" value="17">
+                        <input type="number" id="trades3" class="num-box" min="1" max="100" value="17">
+                    </div>
+                </div>
+
+                <button class="calculate-btn" onclick="calculateEarnings(3)">
+                    Calculate Earnings
+                </button>
+
+                <div class="results" id="results3">
+                    <div class="result-item">
+                        <div class="result-label">Monthly Earnings (Partner Revenue Share)</div>
+                        <div class="result-value earnings" id="earnings3"></div>
+                        <div class="result-subtitle">Trading fee 0.05% - Partner Share 20%</div>
+                    </div>
+                    <div class="additional-notes">Additional notes</div>
+                </div>
+                <div class="current-earnings-wrap">
+                    <div class="current-earnings-title">Current Earnings</div>
+                    <input type="text" class="current-earnings-input" id="currentEarnings3" placeholder="₹0">
+                </div>
+            </div>
+
+            <!-- Calculator 4 -->
+            <div class="calculator-card">
+                <div class="input-group">
+                    <label for="clients4">Number of Trading Clients</label>
+                    <input type="number" id="clients4" min="1" value="100" placeholder="Enter number of clients">
+                </div>
+
+                <div class="input-group">
+                    <label for="capital4">Average Capital per Client</label>
+                    <div class="input-wrapper">
+                        <span class="currency-symbol">₹</span>
+                        <input type="number" id="capital4" class="currency-input" min="1" value="5000" placeholder="Enter average capital">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="leverage4">Average Leverage Used</label>
+                    <div class="inline-slider">
+                        <input type="range" id="leverageRange4" class="thin-range" min="0" max="100" value="27">
+                        <input type="number" id="leverage4" class="num-box" min="0" max="100" value="27">
+                        <span style="color:#fff">x</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="trades4">Trades per Client per Month</label>
+                    <div class="inline-slider">
+                        <input type="range" id="tradesRange4" class="thin-range" min="1" max="100" value="25">
+                        <input type="number" id="trades4" class="num-box" min="1" max="100" value="25">
+                    </div>
+                </div>
+
+                <button class="calculate-btn" onclick="calculateEarnings(4)">
+                    Calculate Earnings
+                </button>
+
+                <div class="results" id="results4">
+                    <div class="result-item">
+                        <div class="result-label">Monthly Earnings (Partner Revenue Share)</div>
+                        <div class="result-value earnings" id="earnings4"></div>
+                        <div class="result-subtitle">Trading fee 0.05% - Partner Share 20%</div>
+                    </div>
+                    <div class="additional-notes">Additional notes</div>
+                </div>
+                <div class="current-earnings-wrap">
+                    <div class="current-earnings-title">Current Earnings</div>
+                    <input type="text" class="current-earnings-input" id="currentEarnings4" placeholder="₹0">
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Input values as per your business projections</p>
+        </div>
+    </div>
+
+    <script>
+        const TRADING_FEE_RATE = 0.0005;
+        const PARTNER_SHARE_PERCENT = 0.20;
+
+        function calculateEarnings(calculatorNumber) {
+            const numClients = parseFloat(document.getElementById(`clients${calculatorNumber}`).value);
+            const avgCapital = parseFloat(document.getElementById(`capital${calculatorNumber}`).value);
+            const leverage = parseFloat(document.getElementById(`leverage${calculatorNumber}`).value);
+            const trades = parseFloat(document.getElementById(`trades${calculatorNumber}`).value);
+
+            if (!numClients || numClients <= 0) {
+                alert('Please enter a valid number of clients');
+                return;
+            }
+
+            if (!avgCapital || avgCapital <= 0) {
+                alert('Please enter a valid average capital per client');
+                return;
+            }
+
+            const totalCapital = numClients * avgCapital;
+            const effectiveTradingCapital = totalCapital * leverage;
+            const totalMonthlyVolume = effectiveTradingCapital * trades;
+            const totalFeesCharged = totalMonthlyVolume * TRADING_FEE_RATE;
+            const monthlyEarnings = totalFeesCharged * PARTNER_SHARE_PERCENT;
+
+            const resultsDiv = document.getElementById(`results${calculatorNumber}`);
+            const earningsElement = document.getElementById(`earnings${calculatorNumber}`);
+
+            resultsDiv.classList.add('show');
+            if (earningsElement) {
+                earningsElement.innerHTML = '<span class="dots"><span></span><span></span><span></span></span>';
+                setTimeout(() => {
+                    earningsElement.textContent = formatCurrency(monthlyEarnings);
+                }, 1500);
+            }
+        }
+
+        function formatCurrency(amount) {
+            return '₹' + amount.toLocaleString('en-IN', {
+                maximumFractionDigits: 0
+            });
+        }
+
+        function formatINRString(numStr) {
+            const digits = numStr.replace(/[^0-9]/g, '');
+            if (digits.length === 0) return '';
+            const n = parseInt(digits, 10);
+            return '₹' + n.toLocaleString('en-IN');
+        }
+
+        function bindCurrentEarningsInputs() {
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById(`currentEarnings${i}`);
+                if (!el) continue;
+                el.addEventListener('input', function() {
+                    this.value = formatINRString(this.value);
+                });
+                el.addEventListener('blur', function() {
+                    this.value = formatINRString(this.value);
+                });
+            }
+        }
+
+        function bindSliders() {
+            for (let i = 1; i <= 4; i++) {
+                const lr = document.getElementById(`leverageRange${i}`);
+                const ln = document.getElementById(`leverage${i}`);
+                const tr = document.getElementById(`tradesRange${i}`);
+                const tn = document.getElementById(`trades${i}`);
+                if (lr && ln) {
+                    lr.addEventListener('input', () => { ln.value = lr.value; });
+                    ln.addEventListener('input', () => { lr.value = ln.value; });
+                }
+                if (tr && tn) {
+                    tr.addEventListener('input', () => { tn.value = tr.value; });
+                    tn.addEventListener('input', () => { tr.value = tn.value; });
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            bindSliders();
+            bindCurrentEarningsInputs();
+        });
+
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                const activeElement = document.activeElement;
+                if (activeElement && activeElement.type === 'number') {
+                    const calculatorNumber = activeElement.id.match(/\d+/)[0];
+                    calculateEarnings(parseInt(calculatorNumber));
+                }
+            }
+        });
+    </script>
+</body>
+</html>
