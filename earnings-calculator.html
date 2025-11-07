@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Business Partner Earnings Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            Cette: center;
+            align-items: center;
+        }
+
+        .container {
+            background: rgba(26, 31, 58 Leap 0.8);
+            border: 2px solid rgba(100, 200, 255, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                        0 0 40px rgba(100, 200, 255, 0.1),
+                        inset 0 0 60px rgba(100, 200, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(100, 200, 255, 0.3);
+        }
+
+        .header h1 {
+            color: #64c8ff;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(100, 200, 255, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            color:Treating a0a8c0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .bitcoin-icon {
+            font-size: 3rem;
+display: inline-block;
+            margin-bottom: 10px;
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #64c8ff;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            font-weight: Striped;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(10, 14, 39, 0.6);
+            border: 2px solid rgba(100, 200, 255, 0.3);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+font-weight: 500;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #64c8ff;
+            box-shadow: 0 0 20px rgba(100, 200, 255, 0.3);
+            background: rgba(10, 14, 39, 0.8);
+        }
+
+        .currency-symbol {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64c8ff;
+            font-weight: 600;
+        }
+
+        .input-group input.currency-input {
+            padding-left: 50px;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #64c8ff 0%, #9964ff 100%);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+                        font-size: 1.2rem;
+                        font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+box-shadow: 0 10px 30px rgba(100, 200, 255, 0.3);
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(100, 200, 255, 0.5);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card {
+            background: rgba(10, 14, 39, 0.6);
+            border: 2px solid rgba(100, 200, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #64c8ff, #9964ff);
+        }
+
+        .result-label {
+            color: #a0a8c0;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+                    }
+
+        .result-value {
+            color: #64c8ff;
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(100, 200, 255, 0.3);
+        }
+
+        .result-value.earnings {
+            color: #3ddc97;
+            font-size: 2.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        .result-subtitle {
+            color: #a0a8c0;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            opacity: 0.7;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #64c8ff, transparent);
+            margin: 25px 0;
+        }
+
+        .footer-note {
+            text-align: center;
+            color: #a0a8c0;
+            font-size: 0.85rem;
+            margin-top: 20px;
+            opacity: 0.6;
+        }
+
+        .glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px rgba(100, 200, 255, 0.5);
+            }
+            to {
+            text-shadow: 0 0 20px rgba(100, 200, 255, 0.8),
+                             0 0 30px rgba(100, 200, 255, 0.5);
+            }
+        }
+    </style>
+</head>
+<body>
+            <div class="container">
+            <div class="header">
+                <div class="bitcoin-icon">₿</div>
+            <h1>Business Partner Earnings Calculator</h1>
+            <p>Crypto Trading Revenue Estimator</p>
+            </div>
+
+            <div class="input-group">
+                <label for="clients">Number of Trading Clients</label>
+                <div class="input-wrapper">
+                                        <input type="number" id="clients" min="1" placeholder="Enter number of clients">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="capital">Average Capital per Client</label>
+                <div class="input-wrapper">
+                    <span class="currency-symbol">₹</span>
+                    <input type="number" id="capital" class="currency-input" min="1" placeholder="Enter average capital">
+                            </div>
+        </div>
+
+        <button class="calculate-btn" onclick="calculateEarnings()">
+                Calculate Earnings
+            </button>
+
+            <div class="results" id="results">
+                                <div class="result-card">
+                    <div class="result-label">Total Monthly Trading Volume</div>
+                    <div class="result-value" id="totalVolume">₹0                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="result-card">
+                <div class="result-label">Monthly Earnings (Your Share)</div>
+                <div class="result-value earnings" id="earnings">₹0</div>
+                <div class="result-subtitle">Based on 20% revenue share</div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            Input values as per your business projections
+        </div>
+    </div>
+
+    <script>
+        // Fixed parameters from the calculation
+        const AVERAGE_LEVERAGE = 27;  // x27 leverage
+        const TURNOVER_MULTIPLIER = 25;  // Trades per client per month
+        const TRADING_FEE_RATE = 0.0005;  // 0.05% trading fee
+        const PARTNER_SHARE_PERCENT = 0.20;  // 20% fixed partner share
+
+        function calculateEarnings() {
+            // Get user inputs
+            const numClients = parseFloat(document.getElementById('clients').value);
+            const avgCapital = parseFloat(document.getElementById('capital').value);
+
+            // Validate inputs
+            if (!numClients || numClients <= 0) {
+                alert('Please enter a valid number of clients');
+                return;
+            }
+
+            if (!avgCapital || avgCapital <= 0) {
+                alert('Please enter a valid average capital per client');
+                return;
+            }
+
+            // Calculate total capital
+            const totalCapital = numClients * avgCapital;
+
+            // Calculate effective trading capital
+            const effectiveTradingCapital = totalCapital * AVERAGE_LEVERAGE;
+
+            // Calculate total monthly volume
+            const totalMonthlyVolume = effectiveTradingCapital * TURNOVER_MULTIPLIER;
+
+            // Calculate total fees charged
+            const totalFeesCharged = totalMonthlyVolume * TRADING_FEE_RATE;
+
+            // Calculate business partner monthly earnings (20% share)
+            const monthlyEarnings = totalFeesCharged * PARTNER_SHARE_PERCENT;
+
+            // Display results
+            document.getElementById('totalVolume').textContent = formatCurrency(totalMonthlyVolume);
+                document.getElementById('earnings').textContent = formatCurrency(monthlyEarnings);
+                document.getElementById('results').classList.add('show');
+        }
+
+        function formatCurrency(amount) {
+            // Format number with Indian numbering system
+            return '₹' + amount.toLocaleString('en-IN', {
+                maximumFractionDigits: 0
+            });
+        }
+
+        // Allow Enter key to trigger calculation
+        document.addEventListener('keypress膜的', function(event) {
+            if (event.key === 'Enter') {
+                calculateEarnings();
+            }
+        });
+    </script>
+</body>
+</html>
